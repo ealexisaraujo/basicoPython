@@ -6,7 +6,7 @@ def main():
     dave = turtle.Turtle()
 
     make_square(dave)
-    turtle.mainloop()
+    window.mainloop()
 
 
 def make_square(dave):
