@@ -13,7 +13,19 @@
 # limitations under the License.
 
 # [START gae_python37_app]
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+# from contact_model import Contact
+
+from google.cloud import ndb
+
+
+class Contact(ndb.Model):
+    name = ndb.StringProperty()
+    phone = ndb.StringProperty()
+    email = ndb.StringProperty()
+
+
+client = ndb.Client(project='labpython')
 
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
@@ -21,10 +33,23 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 
-@app.route('/')
-def hello():
+@app.route(r'/', methods=['GET'])
+def contact_book():
     """Return a friendly HTTP greeting."""
     return render_template('contact_book.html')
+
+
+@app.route(r'/add', methods=['GET', 'POST'])
+def add_contact():
+    with client.context():
+        if request.form:
+            contact = Contact(name=request.form.get('name'),
+                              phone=request.form.get('phone'),
+                              email=request.form.get('email'))
+
+            contact.put()
+
+    return render_template('add_contact.html')
 
 
 if __name__ == '__main__':
